@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br>
+<br>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: 'Teko', sans-serif;
+            text-align: center;
+        }
+        #board {
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 2px solid black;
+            font-size: 48px;
+            cursor: pointer;
+        }
+        #winner {
+            font-size: 24px; /* Increase the font size of the result text */
+        }
+        #play-again {
+            margin-top: 20px;
+            font-size: 20px; /* Increase the font size of the button text */
+            padding: 10px 20px;
+            border: none;
+            background-color: #D77DEE;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quantum Tic Tac Toe : </h1>
+    <div id="board">
+        <div class="row">
+            <div class="cell" id="cell-0"></div>
+            <div class="cell" id="cell-1"></div>
+            <div class="cell" id="cell-2"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="cell-3"></div>
+            <div class="cell" id="cell-4"></div>
+            <div class="cell" id="cell-5"></div>
+        </div>
+        <div class="row">
+            <div class="cell" id="cell-6"></div>
+            <div class="cell" id="cell-7"></div>
+            <div class="cell" id="cell-8"></div>
+        </div>
+    </div>
+    <p id="winner"></p>
+    <button id="play-again">Play Again</button> <!-- Add a Play Again button -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const cells = document.querySelectorAll('.cell');
+            let currentPlayer = 'X';
+            let gameActive = true;
+            let winner = null;
+
+            const winningCombos = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            cells.forEach(cell => cell.addEventListener('click', handleClick));
+
+            function handleClick(e) {
+                const cell = e.target;
+                const cellIndex = parseInt(cell.id.split('-')[1]);
+
+                if (gameActive && !cell.textContent) {
+                    cell.textContent = currentPlayer;
+                    checkWinner();
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    if (gameActive && currentPlayer === 'O') {
+                        makeQuantumMove();
+                    }
+                }
+            }
+
+            function checkWinner() {
+                for (let combo of winningCombos) {
+                    const [a, b, c] = combo;
+                    if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
+                        gameActive = false;
+                        winner = cells[a].textContent;
+                        document.getElementById('winner').textContent = `Winner: ${winner}`;
+                        return;
+                    }
+                }
+                if (![...cells].some(cell => cell.textContent === '')) {
+                    gameActive = false;
+                    document.getElementById('winner').textContent = 'It\'s a tie!';
+                }
+            }
+
+            function makeQuantumMove() {
+                const emptyCells = [...cells].filter(cell => cell.textContent === '');
+                if (emptyCells.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                    const cellToMove = emptyCells[randomIndex];
+                    cellToMove.textContent = currentPlayer;
+                    checkWinner();
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                }
+            }
+
+            // Function to handle the Play Again button click
+            document.getElementById('play-again').addEventListener('click', function() {
+                cells.forEach(cell => {
+                    cell.textContent = ''; // Clear the cell content
+                });
+                gameActive = true; // Reset game state
+                winner = null; // Reset winner
+                document.getElementById('winner').textContent = ''; // Clear the winner message
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+{% endblock %}
